@@ -50,12 +50,15 @@ if st.button("🚀 开始计算"):
     st.dataframe(df)
 
     # ✅ 绘制示意图
-    fig, ax = plt.subplots(figsize=(8,4))
+    fig, ax = plt.subplots(figsize=(8, 4))
     ax.plot([0, 20, 40, 60], [0, -10, -20, -10], label="下滑段")
     ax.plot([60, 70], [-10, 0], label="抛物线")
-    ax.set_title("滑道轨迹示意图")
-    ax.set_xlabel("水平距离 (m)")
-    ax.set_ylabel("高度 (m)")
+
+    # 👉 显式指定字体名称
+    ax.set_title("滑道轨迹示意图", fontname='DejaVu Sans')
+    ax.set_xlabel("水平距离 (m)", fontname='DejaVu Sans')
+    ax.set_ylabel("高度 (m)", fontname='DejaVu Sans')
+
     ax.legend()
     st.pyplot(fig)
 
