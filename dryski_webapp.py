@@ -9,10 +9,6 @@ plt.rcParams['axes.unicode_minus'] = False  # 正确显示负号
 
 import zipfile
 
-#字库
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
-
 st.set_page_config(
     page_title="JFdryski 滑道滑行模拟器",
     page_icon="🎿",
