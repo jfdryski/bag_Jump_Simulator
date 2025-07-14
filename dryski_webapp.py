@@ -1,7 +1,8 @@
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 黑体
+#plt.rcParams['font.sans-serif'] = ['SimHei']  # 黑体
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'Arial Unicode MS', 'DejaVu Sans', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 import pandas as pd
 import io
