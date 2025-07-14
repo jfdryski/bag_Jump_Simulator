@@ -1,88 +1,78 @@
-
 import streamlit as st
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import io
+import base64
 
-# 🚩 通用中文无衬线字体设置（跨平台）
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'Arial Unicode MS', 'DejaVu Sans', 'sans-serif']
-plt.rcParams['axes.unicode_minus'] = False  # 正确显示负号
+# -----------------------------
+# Streamlit basic settings
+# -----------------------------
+st.set_page_config(page_title="Bag Jump Simulator", page_icon="🏂")
 
-import zipfile
-
-st.set_page_config(
-    page_title="JFdryski 滑道滑行模拟器",
-    page_icon="🎿",
-    layout="centered"
-)
-
-# ✅ LOGO & 标题
-st.image("JFdryski_logo.png", width=200)
-st.title("🎿 JFdryski 气垫跳台滑道滑行模拟器")
-
-st.markdown("""
-输入您的参数，点击【开始计算】，并自动生成离线可分享报告！
----
+st.title("Bag Jump Slope Simulator 🏂")
+st.write("""
+Input your slope parameters below, click **Start Calculation**, and get your trajectory report!
 """)
 
-# ✅ 参数输入（可根据您的需求扩展）
-摩擦系数 = st.slider("摩擦系数 (0~0.5)", 0.0, 0.5, 0.18, step=0.01)
-风阻值 = st.slider("风阻 Cd (0.1~0.9)", 0.1, 0.9, 0.9, step=0.01)
-inrun_angle = st.slider("第一段下滑坡角度 (°)", 10, 60, 40)
-inrun_length = st.number_input("第一段下滑坡长 (m)", value=43)
-transition_length = st.number_input("第二段过渡区长度 (m)", value=10)
-kicker_angle = st.slider("第三段上坡角度 (°)", 0, 60, 30)
-kicker_length = st.number_input("第三段上坡长 (m)", value=11)
+# -----------------------------
+# User Inputs
+# -----------------------------
+friction = st.slider("Friction Coefficient (0~0.5)", 0.0, 0.5, 0.18)
+wind_cd = st.slider("Wind Cd (0.1~0.9)", 0.1, 0.9, 0.9)
+slope_angle = st.slider("Slope Angle 1 (deg)", 0, 60, 40)
+slope_length = st.number_input("Slope Length 1 (m)", 1.0, 100.0, 43.0)
 
-# ✅ 模拟一组计算输出（您可以替换成真实公式）
-if st.button("🚀 开始计算"):
-    # 👉 假设的计算结果
-    result = {
-        "第一段结束时速度 (km/h)": [74.3],
-        "第二段结束时速度 (km/h)": [56.8],
-        "抛物线水平距离 (m)": [21.99],
-        "抛物线最大高度 (m)": [3.17],
-        "空中飞行时间 (s)": [1.61],
-        "全程滑行时间 (s)": [8.18],
-        "前台距 Knuckle (m)": [14.29],
-    }
-    df = pd.DataFrame(result)
-    st.success("✅ 计算完成！")
+# -----------------------------
+# Calculate Button
+# -----------------------------
+if st.button("Start Calculation"):
+    st.success("Calculation Done!")
+
+    # -----------------------------
+    # Dummy Example Calculation
+    # -----------------------------
+    speed1 = 74.3
+    speed2 = 56.8
+    distance = 21.99
+    max_height = 3.17
+
+    # -----------------------------
+    # Show Results
+    # -----------------------------
+    st.write(f"**End speed of slope 1:** {speed1} km/h")
+    st.write(f"**End speed of slope 2:** {speed2} km/h")
+    st.write(f"**Horizontal distance:** {distance} m")
+    st.write(f"**Max height:** {max_height} m")
+
+    # -----------------------------
+    # DataFrame
+    # -----------------------------
+    df = pd.DataFrame({
+        "Slope1 Speed": [speed1],
+        "Slope2 Speed": [speed2],
+        "Horizontal Distance": [distance],
+        "Max Height": [max_height]
+    })
+
     st.dataframe(df)
 
-    # ✅ 绘制示意图
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.plot([0, 20, 40, 60], [0, -10, -20, -10], label="下滑段")
-    ax.plot([60, 70], [-10, 0], label="抛物线")
-
-    # 👉 显式指定字体名称
-    ax.set_title("滑道轨迹示意图", fontname='DejaVu Sans')
-    ax.set_xlabel("水平距离 (m)", fontname='DejaVu Sans')
-    ax.set_ylabel("高度 (m)", fontname='DejaVu Sans')
-
-    ax.legend()
+    # -----------------------------
+    # Plot Trajectory
+    # -----------------------------
+    fig, ax = plt.subplots()
+    x = np.linspace(0, distance, 100)
+    y = -0.1 * (x - distance/2)**2 + max_height
+    ax.plot(x, y)
+    ax.set_xlabel("Distance (m)")
+    ax.set_ylabel("Height (m)")
+    ax.set_title("Trajectory Curve")
     st.pyplot(fig)
 
-    # ✅ 保存 PNG
-    fig.savefig("dryski_trajectory.png")
-    st.success("✅ 已保存轨迹图 dryski_trajectory.png")
-
-    # ✅ 导出参数表 HTML
-    df.to_html("dryski_result.html")
-    st.success("✅ 已生成参数表 dryski_result.html")
-
-    # ✅ 打包成 ZIP
-    with zipfile.ZipFile("dryski_report.zip", "w") as zipf:
-        zipf.write("dryski_trajectory.png")
-        zipf.write("dryski_result.html")
-
-    with open("dryski_report.zip", "rb") as file:
-        st.download_button(
-            label="📥 下载完整离线报告 (ZIP)",
-            data=file,
-            file_name="dryski_report.zip",
-            mime="application/zip"
-        )
-
-    st.info("离线报告包含：PNG 轨迹图 + HTML 参数表，可直接邮件或微信分享！")
-
-
+    # -----------------------------
+    # Download Result
+    # -----------------------------
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="result.csv">📄 Download CSV result</a>'
+    st.markdown(href, unsafe_allow_html=True)
