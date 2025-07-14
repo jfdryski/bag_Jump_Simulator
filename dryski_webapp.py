@@ -77,18 +77,18 @@ if st.button("开始计算"):
 
     # 轨迹示意图
     fig, ax = plt.subplots()
-    ax.plot([0, L1 * math.cos(theta1)], [0, -L1 * math.sin(theta1)], label="第一段")
-    ax.plot([L1 * math.cos(theta1), L1 * math.cos(theta1) + L2], [-L1 * math.sin(theta1), -L1 * math.sin(theta1)], label="第二段")
+    ax.plot([0, L1 * math.cos(theta1)], [0, -L1 * math.sin(theta1)], label="In run")
+    ax.plot([L1 * math.cos(theta1), L1 * math.cos(theta1) + L2], [-L1 * math.sin(theta1), -L1 * math.sin(theta1)], label="Buffer")
     ax.plot([L1 * math.cos(theta1) + L2, L1 * math.cos(theta1) + L2 + L3 * math.cos(theta3)],
-            [-L1 * math.sin(theta1), -L1 * math.sin(theta1) + L3 * math.sin(theta3)], label="第三段")
+            [-L1 * math.sin(theta1), -L1 * math.sin(theta1) + L3 * math.sin(theta3)], label="Kicker")
     if t_flight > 0:
         t = [i * t_flight / 50 for i in range(51)]
         x = [vx * ti for ti in t]
         y = [vy * ti - 0.5 * g * ti ** 2 for ti in t]
         ax.plot([L1 * math.cos(theta1) + L2 + L3 * math.cos(theta3) + xi for xi in x],
-                [-L1 * math.sin(theta1) + L3 * math.sin(theta3) + yi for yi in y], label="抛物线")
-    ax.set_xlabel("水平距离 (m)")
-    ax.set_ylabel("垂直高度 (m)")
+                [-L1 * math.sin(theta1) + L3 * math.sin(theta3) + yi for yi in y], label="Parabola")
+    ax.set_xlabel("Horizontal distance (m)")
+    ax.set_ylabel("High Point (m)")
     ax.legend()
     ax.grid()
     st.pyplot(fig)
